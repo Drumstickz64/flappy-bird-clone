@@ -1,11 +1,13 @@
+import random
+import sys
+
 import pygame as pg
 import pymunk
-import sys
-import random
-from settings import SCREEN_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT, FPS
-from utils import load_sprite, load_sound, load_font
-from objects import Base, Bird, Pipe, ScoreMessage, StartMessage, GameoverMessage
 
+from objects import (Base, Bird, GameoverMessage, Pipe, ScoreMessage,
+                     StartMessage)
+from settings import FPS, SCREEN_HEIGHT, SCREEN_SIZE, SCREEN_WIDTH
+from utils import load_font, load_sound, load_sprite
 
 pg.init()
 
