@@ -4,8 +4,13 @@ import sys
 import pygame as pg
 import pymunk
 
-from objects import (Base, Bird, GameoverMessage, Pipe, ScoreMessage,
-                     StartMessage)
+from objects.base import Base
+from objects.bird import Bird
+from objects.pipe import Pipe
+from objects.score_message import ScoreMessage
+from objects.start_message import StartMessage
+from objects.gameover_message import GameoverMessage
+
 from settings import FPS, SCREEN_HEIGHT, SCREEN_SIZE, SCREEN_WIDTH
 from utils import load_font, load_sound, load_sprite
 
