@@ -35,5 +35,4 @@ class Pipe(pg.sprite.Sprite):
         
         # kill the sprite after it leaves the screen
         if self.rect.right < 0:
-            self.game.objects.remove(self)
             self.kill()

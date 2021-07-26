@@ -37,7 +37,7 @@ class FlappyBird:
         self.SPAWNPIPE = pg.USEREVENT
         self.CYCLE_WINGS = pg.USEREVENT + 1
         
-        self.objects = pg.sprite.LayeredUpdates()
+        self.rendering_group = pg.sprite.LayeredUpdates()
         self.pipes = []
         
     
@@ -49,13 +49,13 @@ class FlappyBird:
         self.base = Base(self.base_image)
         
         self.start_message = StartMessage(self.start_message_image)
-        self.objects.add(self.start_message)
+        self.rendering_group.add(self.start_message)
         
         self.score_message = ScoreMessage(self.font)
-        self.objects.add(self.score_message)
+        self.rendering_group.add(self.score_message)
         
         self.bird = Bird(self, self.bird_images)
-        self.objects.add(self.bird)
+        self.rendering_group.add(self.bird)
         
         pg.time.set_timer(self.CYCLE_WINGS, Bird.CYCLE_WINGS_TIME)
         
@@ -88,32 +88,35 @@ class FlappyBird:
         if event.type == pg.QUIT:
             self.running == False
         
-        elif event.type == pg.MOUSEBUTTONDOWN:
-            if self.gameover:
-                self.running = False
-                return
-            
-            if not self._started:
-                self.start()
-            
-            self.bird.flap()
+        elif event.type == pg.MOUSEBUTTONDOWN or (event.type == pg.KEYDOWN and event.key == pg.K_SPACE):
+            self.handle_action_event()
         
         elif event.type == self.SPAWNPIPE and not self.gameover:
             self.spawn_pipe_pair()
         
         elif event.type == self.CYCLE_WINGS:
             self.bird.cycle_wings()
+    
+    def handle_action_event(self):
+        '''Handles the "action event" which is when the user clicks or presses spacebar'''
+        if self.gameover:
+            self.running = False
+            return
         
+        if not self._started:
+            self.start()
+        
+        self.bird.flap()
     
     def update(self):
         self.space.step(self._dt)
-        self.objects.update()
+        self.rendering_group.update()
         
     
     def draw(self):
-        self.objects.clear(self.screen, self.background_image)
+        self.rendering_group.clear(self.screen, self.background_image)
         
-        dirty_rects = self.objects.draw(self.screen)
+        dirty_rects = self.rendering_group.draw(self.screen)
         self.base.draw(self.screen)
         
         pg.display.update(dirty_rects)
@@ -136,11 +139,11 @@ class FlappyBird:
         
         first_pipe = Pipe(self, self.pipe_image, primary = True, topleft = (SCREEN_WIDTH, first_pipe_y))
         self.pipes.append(first_pipe)
-        self.objects.add(first_pipe)
+        self.rendering_group.add(first_pipe)
         
         second_pipe = Pipe(self, self.pipe_image_flipped, primary = False, bottomleft = (SCREEN_WIDTH, second_pipe_y))
         self.pipes.append(second_pipe)
-        self.objects.add(second_pipe)
+        self.rendering_group.add(second_pipe)
         
         
     
@@ -168,7 +171,6 @@ class FlappyBird:
         self.quit()
         
     def start(self):
-        self.objects.remove(self.start_message)
         self.start_message.kill()
         
         pg.time.set_timer(self.SPAWNPIPE, Pipe.SPAWN_TIME)
@@ -183,7 +185,7 @@ class FlappyBird:
         self.hit_sound.play()
         
         gameover_message = GameoverMessage(self.gameover_message_image)
-        self.objects.add(gameover_message)
+        self.rendering_group.add(gameover_message)
         
         
 
