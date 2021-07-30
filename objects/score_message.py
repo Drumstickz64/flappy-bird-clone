@@ -1,9 +1,9 @@
 import pygame as pg
-from settings import SCREEN_WIDTH, LAYERS
+import settings
 
 class ScoreMessage(pg.sprite.Sprite):
     '''Class that represents the floating score display at the top of the screen'''
-    CENTER = (SCREEN_WIDTH // 2, 100)
+    CENTER = (settings.SCREEN_WIDTH // 2, 100)
     
     def __init__(self, font, *groups):
         super().__init__(groups)
@@ -11,7 +11,7 @@ class ScoreMessage(pg.sprite.Sprite):
         self.font = font
         self.update_score(0)
         self.rect = self.image.get_rect(center = ScoreMessage.CENTER)
-        self._layer = LAYERS["ui"]
+        self._layer = settings.LAYERS["ui"]
     
     
     def update_score(self, score):

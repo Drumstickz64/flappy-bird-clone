@@ -1,9 +1,9 @@
 import pygame as pg
 import pymunk
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT, LAYERS
+import settings
 
 class Bird(pg.sprite.Sprite):
-    CENTER = (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3)
+    CENTER = (settings.SCREEN_WIDTH // 4, settings.SCREEN_HEIGHT // 3)
     FLAP_FORCE = (0, -10000)
     CYCLE_WINGS_TIME = 50
     DYING_IMPULSE = (-1500, -8000)
@@ -16,7 +16,7 @@ class Bird(pg.sprite.Sprite):
         self.images = images
         self.image = images[1]
         self.rect = self.image.get_rect(center = Bird.CENTER)
-        self._layer = LAYERS["foreground"]
+        self._layer = settings.LAYERS["foreground"]
         
         
         # physics

@@ -1,6 +1,5 @@
 import pygame as pg
 import os, platform
-from settings import SCREEN_SIZE
 
 
 SOUND_FILE_EXT = ".wav" if platform.system() == "Windows" else ".ogg"
