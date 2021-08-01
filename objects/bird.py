@@ -6,8 +6,10 @@ from layer import Layer
 class Bird(pg.sprite.Sprite):
     CENTER = (settings.SCREEN_WIDTH // 4, settings.SCREEN_HEIGHT // 3)
     FLAP_FORCE = (0, -10000)
-    CYCLE_WINGS_TIME = 50
     DYING_IMPULSE = (-1500, -8000)
+    CYCLE_WINGS_TIME = 50
+    CYCLE_WINGS_EVENT = pg.USEREVENT + 1
+
     
     def __init__(self, game, images, *groups):
         
@@ -17,6 +19,7 @@ class Bird(pg.sprite.Sprite):
         self.image = images[1]
         self.rect = self.image.get_rect(center = Bird.CENTER)
         self._layer = Layer.CREATURE
+        pg.time.set_timer(self.CYCLE_WINGS_EVENT, Bird.CYCLE_WINGS_TIME)
         
         super().__init__(groups)
         
@@ -27,13 +30,18 @@ class Bird(pg.sprite.Sprite):
         
         self.game.space.add(self.body)
         
-    
     def update(self):
         self.rect.x, self.rect.y = self.body.position
         
         if not self.game.gameover:
             self.check_collition()
+    
+    def handle_event(self, event):
+        if event.type == self.CYCLE_WINGS_EVENT:
+            self.cycle_wings()
         
+        elif event.type == pg.MOUSEBUTTONDOWN or (event.type == pg.KEYDOWN and event.key == pg.K_SPACE):
+            self.flap()
         
     def cycle_wings(self):
         self.images.insert(0, self.images.pop())
@@ -51,10 +59,11 @@ class Bird(pg.sprite.Sprite):
         is_collided_with_base = self.rect.colliderect(self.game.base.rect)
         is_collided_with_pipe = self.rect.collidelist(self.game.pipes) != -1
         
-        if is_collided_with_base or is_collided_with_bounds or is_collided_with_pipe :
+        if is_collided_with_base or is_collided_with_bounds or is_collided_with_pipe:
+            self.fall()
             self.game.end_game()
             
     
-    def die(self):
+    def fall(self):
         self.velocity = (0, 0)
         self.body.apply_impulse_at_local_point(Bird.DYING_IMPULSE)
