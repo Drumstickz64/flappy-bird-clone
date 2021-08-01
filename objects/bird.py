@@ -1,6 +1,7 @@
 import pygame as pg
 import pymunk
 import settings
+from layer import Layer
 
 class Bird(pg.sprite.Sprite):
     CENTER = (settings.SCREEN_WIDTH // 4, settings.SCREEN_HEIGHT // 3)
@@ -9,15 +10,15 @@ class Bird(pg.sprite.Sprite):
     DYING_IMPULSE = (-1500, -8000)
     
     def __init__(self, game, images, *groups):
-        super().__init__(groups)
         
         # logic
         self.game = game
         self.images = images
         self.image = images[1]
         self.rect = self.image.get_rect(center = Bird.CENTER)
-        self._layer = settings.LAYERS["foreground"]
+        self._layer = Layer.CREATURE
         
+        super().__init__(groups)
         
         # physics
         moment = pymunk.moment_for_box(15, self.image.get_size())

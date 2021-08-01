@@ -34,26 +34,6 @@ class FlappyBird:
         self.rendering_group = pg.sprite.LayeredUpdates()
         self.pipes = []
         
-    
-    def init(self):
-        self.running = True
-        
-        self._clock = pg.time.Clock()
-        
-        self.base = objects.Base(self.base_image)
-        
-        self.start_message = objects.StartMessage(self.start_message_image)
-        self.rendering_group.add(self.start_message)
-        
-        self.score_message = objects.ScoreMessage(self.font)
-        self.rendering_group.add(self.score_message)
-        
-        self.bird = objects.Bird(self, self.bird_images)
-        self.rendering_group.add(self.bird)
-        
-        pg.time.set_timer(self.CYCLE_WINGS, objects.Bird.CYCLE_WINGS_TIME)
-        
-    
     def load_assets(self):
         self.bird_images = [
             resource.load_sprite("yellowbird-downflap.png"),
@@ -76,7 +56,18 @@ class FlappyBird:
         self.wing_sound = resource.load_sound("wing")
         self.point_sound = resource.load_sound("point")
         self.hit_sound = resource.load_sound("hit")
+
+    def init(self):
+        self.running = True
         
+        self._clock = pg.time.Clock()
+        
+        self.base = objects.Base(self.base_image, self.rendering_group)
+        self.start_message = objects.StartMessage(self.start_message_image, self.rendering_group)
+        self.score_message = objects.ScoreMessage(self.font, self.rendering_group)
+        self.bird = objects.Bird(self, self.bird_images, self.rendering_group)
+        
+        pg.time.set_timer(self.CYCLE_WINGS, objects.Bird.CYCLE_WINGS_TIME)
     
     def handle_event(self, event):
         if event.type == pg.QUIT:
@@ -109,10 +100,7 @@ class FlappyBird:
     
     def draw(self):
         self.rendering_group.clear(self.screen, self.background_image)
-        
         dirty_rects = self.rendering_group.draw(self.screen)
-        self.base.draw(self.screen)
-        
         pg.display.update(dirty_rects)
         
     
@@ -123,23 +111,32 @@ class FlappyBird:
         
     def draw_static_scenery(self):
         self.screen.blit(self.background_image, (0, 0))
-        self.base.draw(self.screen)
+        # self.base.draw(self.screen)
         pg.display.flip()
         
         
     def spawn_pipe_pair(self):
+        pipe_x = settings.SCREEN_WIDTH
+
         first_pipe_y = random.randint(objects.Pipe.GAP, settings.SCREEN_HEIGHT - objects.Pipe.GAP)
-        second_pipe_y = first_pipe_y - objects.Pipe.GAP
-        
-        first_pipe = objects.Pipe(self, self.pipe_image, primary = True, topleft = (settings.SCREEN_WIDTH, first_pipe_y))
+        first_pipe = objects.Pipe(
+            self,
+            self.pipe_image,
+            self.rendering_group,
+            primary = True,
+            topleft = (pipe_x, first_pipe_y)
+        )
         self.pipes.append(first_pipe)
-        self.rendering_group.add(first_pipe)
         
-        second_pipe = objects.Pipe(self, self.pipe_image_flipped, primary = False, bottomleft = (settings.SCREEN_WIDTH, second_pipe_y))
+        second_pipe_y = first_pipe_y - objects.Pipe.GAP
+        second_pipe = objects.Pipe(
+            self,
+            self.pipe_image_flipped,
+            self.rendering_group,
+            primary = False,
+            bottomleft = (pipe_x, second_pipe_y)
+        )
         self.pipes.append(second_pipe)
-        self.rendering_group.add(second_pipe)
-        
-        
     
     def increment_score(self):
         self.score += 1
